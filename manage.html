@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .main-container {
+            text-align: center;
+            margin: 50px auto;
+            max-width: 600px;
+        }
+        .title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="title">Library Management System</div>
+        <div class="button-container">
+            <button id="btnBuy" class="button">Order Book</button>
+            <button id="btnSell" class="button">Load/Save Book</button>
+        </div>
+        <div id="userInfo" class="user-info"></div>
+    </div>
+
+    <script>
+        // Function to handle opening OrderBookView
+        document.getElementById('btnBuy').addEventListener('click', function() {
+            // Redirect to the order.html page
+            window.location.href = 'orderbook.html';
+        });
+
+        // Function to handle opening BookViewController
+        document.getElementById('btnSell').addEventListener('click', function() {
+
+            // Redirect to the loadsave.html page
+            window.location.href = 'loadsave.html';
+        });
+
+        // Function to set user information
+        function setUserInfo(user) {
+            const userInfo = document.getElementById('userInfo');
+            userInfo.innerText = `Username: ${user.username} | Full Name: ${user.fullName}`;
+        }
+
+        // Retrieve URL parameters and set user information
+        // Retrieve user information from Local Storage
+        const userID = localStorage.getItem('userID');
+        const username = localStorage.getItem('username');
+        const fullName = localStorage.getItem('fullName');
+
+        // Set user information on manage.html UI
+        setUserInfo({ userID, username, fullName });
+    </script>
+</body>
+</html>

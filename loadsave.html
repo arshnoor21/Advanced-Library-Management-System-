@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load/Save Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 600px;
+        }
+        .title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .input-container {
+            margin-bottom: 15px;
+        }
+        .label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .text-input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="title">Load/Save Books</div>
+<div class="button-container">
+    <button id="btnLoad" class="button">Load Book</button>
+    <button id="btnSave" class="button">Save Book</button>
+    <button id="btnBack" class="button">Back to Main Page</button>
+</div>
+
+<div class="input-container">
+    <label class="label" for="bookID">Book ID:</label>
+    <input type="text" id="bookID" class="text-input" />
+</div>
+
+<div class="input-container">
+    <label class="label" for="bookName">Book Name:</label>
+    <input type="text" id="bookName" class="text-input" />
+</div>
+
+<div class="input-container">
+    <label class="label" for="authorName">Author Name:</label>
+    <input type="text" id="authorName" class="text-input" />
+</div>
+
+<div class="input-container">
+    <label class="label" for="bookQuantity">Quantity:</label>
+    <input type="text" id="bookQuantity" class="text-input" />
+</div>
+
+<div class="input-container">
+    <label class="label" for="status">Status:</label>
+    <input type="text" id="status" class="text-input" />
+</div>
+
+
+<script>
+
+    document.getElementById('btnLoad').addEventListener('click', function() {
+        const bookID = document.getElementById('bookID').value;
+
+        // Validate bookID input before making the fetch request
+        if (parseInt(bookID) <= 0 || isNaN(parseInt(bookID))) {
+            // Display alert if bookID is 0 or negative or not a number
+            alert('Please enter a valid Book ID greater than 0.');
+            return;
+        }
+
+        fetch(`http://localhost:5058/book/${bookID}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch book: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.hasOwnProperty('bookName')) {
+                    // No such Book Exists
+                    alert('No such Book Exists');
+                    return;
+                }
+
+                document.getElementById('bookName').value = data.bookName || '';
+                document.getElementById('authorName').value = data.authorName || '';
+                document.getElementById('bookQuantity').value = data.quantity || '';
+                document.getElementById('status').value = data.status || '';
+
+                alert('Loaded Book');
+            })
+            .catch(error => {
+                console.error('Error loading book:', error);
+                alert('No such book exists.');
+            });
+    });
+
+    document.getElementById('btnSave').addEventListener('click', function() {
+        const bookID = document.getElementById('bookID').value;
+        const bookName = document.getElementById('bookName').value;
+        const authorName = document.getElementById('authorName').value;
+        const quantity = document.getElementById('bookQuantity').value;
+        const status = document.getElementById('status').value;
+
+        if (parseInt(bookID) <= 0 || isNaN(parseInt(bookID))) {
+            // Display alert if bookID is 0 or negative or not a number
+            alert('Please enter a valid Book ID greater than 0.');
+            return;
+        }
+
+        // Validation for empty bookName or authorName fields
+        if (bookName.trim() === '' || authorName.trim() === '') {
+            alert('Please enter non empty Book Name and Author Name.');
+            return;
+        }
+
+        // Validation for negative or zero quantity
+        if (parseInt(quantity) <= 0 || isNaN(parseInt(quantity))) {
+            alert('Please enter a valid quantity greater than 0.');
+            return;
+        }
+
+        const bookData = {
+            bookID: parseInt(bookID),  // Parse the string to an integer
+            bookName: bookName,
+            authorName: authorName,
+            quantity: parseInt(quantity),  // Parse the string to an integer
+            status: status
+        };
+
+        fetch('http://localhost:5058/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to save book: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(`Saved Book: ${JSON.stringify(data)}`);
+            })
+            .catch(error => {
+                console.error('Error saving book:', error);
+            });
+    });
+
+    document.getElementById('btnBack').addEventListener('click', function() {
+        // Redirect to the manage.html page
+        window.location.href = 'manage.html';
+    });
+</script>
+</body>
+</html>
